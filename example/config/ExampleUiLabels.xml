@@ -700,6 +700,12 @@
         <value xml:lang="en">Lookup Field of presentation type none. We call only the autocomplete</value>
         <value xml:lang="fr">Champs de recherche de type de présentation aucun, qui utilise seulement l'autocompletion</value>
     </property>
+    <property key="ExampleLookupFields6">
+        <value xml:lang="en">Popup lookup field with description (old way, maybe be useful in some cases, notably if javascript is not enabled)</value>
+    </property>
+    <property key="ExampleLookupFields7">
+        <value xml:lang="en">Layered lookup field with autocompletion, description at right and optional target</value>
+    </property>
     <property key="ExampleLookupFieldsTitle">
         <value xml:lang="en">Lookup Fields</value>
         <value xml:lang="fr">Champs de recherche</value>
@@ -720,7 +726,8 @@
         <value xml:lang="en">Mask Field</value>
     </property>
     <property key="ExampleMaskFieldDescription">
-        <value xml:lang="en">Here is a simple example to mask a field with given mask definition as 'a*-999-a999'.</value>
+        <value xml:lang="en">Here is a simple example to mask a field with given mask definition as 'a*-999-a999'. Default translations: * - Alphanumeric [A-Za-z0-9], 9 - Numeric [0-9*] and a - Alphabets [A-Za-z]
+        </value>
     </property>
     <property key="ExampleMessage">
         <value xml:lang="en">For something interesting make sure you are logged in, try username:admin, password:ofbiz.</value>

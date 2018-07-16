@@ -73,7 +73,6 @@ under the License.
 <#assign fixedAssetExist = shoppingCart.containAnyWorkEffortCartItems() />
 <#-- change display format when rental items exist in the shoppingcart -->
 <div>
-  <h2>
     <#if ((sessionAttributes.lastViewedProducts)?has_content && sessionAttributes.lastViewedProducts?size > 0)>
       <#assign continueLink = "/product?product_id=" + sessionAttributes.lastViewedProducts.get(0) />
     <#else>
@@ -92,15 +91,14 @@ under the License.
       </span>
     </#if>
     ${uiLabelMap.CommonQuickAdd}
-  </h2>
   <div>
     <div>
       <form method="post"
-          action="<@ofbizUrl>additem<#if requestAttributes._CURRENT_VIEW_?has_content>/${requestAttributes._CURRENT_VIEW_}</#if></@ofbizUrl>"
+          action="<@ofbizUrl>additem<#if requestAttributes._CURRENT_VIEW_?has_content>/${requestAttributes._CURRENT_VIEW_}</#if></@ofbizUrl>" class="form-inline"
           name="quickaddform">
-        <fieldset>
-          ${uiLabelMap.EcommerceProductNumber}
-          <input type="text" class="inputBox" name="add_product_id" value="${requestParameters.add_product_id!}" />
+        <div class="form-group mb-2">
+          <label for="add_product_id" class="mr-2"> ${uiLabelMap.EcommerceProductNumber} </label>
+          <input type="text" class="form-control form-control-sm" name="add_product_id" id="add_product_id" value="${requestParameters.add_product_id!}" />
           <#-- check if rental data present  insert extra fields in Quick Add-->
           <#if (product?? && "ASSET_USAGE" == product.getString("productTypeId")
               ) || (product?? && "ASSET_USAGE_OUT_IN" == product.getString("productTypeId"))>
@@ -116,14 +114,14 @@ under the License.
             <input type="text" class="inputBox" size="3" name="reservPersons"
                 value="${requestParameters.reservPersons?default("1")}" />
           </#if>
-          ${uiLabelMap.CommonQuantity}:
-          <input type="text" class="inputBox" size="5" name="quantity"
+          <label for="quantity" class="mx-2">${uiLabelMap.CommonQuantity}:</label>
+          <input type="text" class="form-control form-control-sm" name="quantity" id="quantity"
               value="${requestParameters.quantity?default("1")}" />
-          <input type="submit" class="smallSubmit" value="${uiLabelMap.OrderAddToCart}" />
-          <#-- <a href="javascript:document.quickaddform.submit()" class="button">
+          <input type="submit" class="btn btn-outline-secondary btn-sm btn-sm" value="${uiLabelMap.OrderAddToCart}" />
+          <#-- <a href="javascript:document.quickaddform.submit()" class="btn btn-outline-secondary btn-sm">
                  <span>[${uiLabelMap.OrderAddToCart}]</span>
                </a> -->
-        </fieldset>
+        </div>
       </form>
     </div>
   </div>
@@ -138,50 +136,62 @@ under the License.
 <div>
   <div>
     <div>
-      <div class="lightbuttontextdisabled">
+      <ul class="list-inline">
         <#--<a href="<@ofbizUrl>main</@ofbizUrl>" class="lightbuttontext">
               [${uiLabelMap.EcommerceContinueShopping}]
             </a>-->
         <#if (shoppingCartSize > 0)>
-          <a href="javascript:document.cartform.submit();" class="submenutext">
+          <li class="list-inline-item">
+          <a href=";">
             ${uiLabelMap.EcommerceRecalculateCart}
           </a>
-          <a href="<@ofbizUrl>emptycart</@ofbizUrl>" class="submenutext">
+          </li>
+          <li class="list-inline-item">
+          <a href="<@ofbizUrl>emptycart</@ofbizUrl>">
             ${uiLabelMap.EcommerceEmptyCart}
           </a>
-          <a href="javascript:removeSelected();" class="submenutext">
+          </li>
+          <li class="list-inline-item">
+          <a href="javascript:removeSelected();">
             ${uiLabelMap.EcommerceRemoveSelected}
           </a>
+          </li>
         <#else>
+          <li class="list-inline-item">
           <span class="submenutextdisabled">${uiLabelMap.EcommerceRecalculateCart}</span>
+          </li>
+          <li class="list-inline-item">
           <span class="submenutextdisabled">${uiLabelMap.EcommerceEmptyCart}</span>
+          </li>
+          <li class="list-inline-item">
           <span class="submenutextdisabled">${uiLabelMap.EcommerceRemoveSelected}</span>
+          </li>
         </#if>
+      </ul>
+    </div>
+    <div class="row mb-2">
+      <div class="col-xl-12">
+        <span class="h3">${uiLabelMap.OrderShoppingCart}</span>
         <#if (shoppingCartSize > 0)>
-          <a href="<@ofbizUrl>checkoutoptions</@ofbizUrl>" class="submenutextright">
-            ${uiLabelMap.OrderCheckout}
-          </a>
+          <a class="btn btn-primary float-right" href="<@ofbizUrl>checkoutoptions</@ofbizUrl>">${uiLabelMap.OrderCheckout}</a>
         <#else>
-          <span class="submenutextrightdisabled">${uiLabelMap.OrderCheckout}</span>
+          <a class="btn btn-primary disabled float-right" href="#">${uiLabelMap.OrderCheckout}</a>
         </#if>
       </div>
     </div>
-    <br />
-    <h2>&nbsp;${uiLabelMap.OrderShoppingCart}</h2>
   </div>
   <div>
     <#if (shoppingCartSize > 0)>
       <form method="post" action="<@ofbizUrl>modifycart</@ofbizUrl>" name="cartform">
-        <fieldset>
           <input type="hidden" name="removeSelected" value="false" />
-          <table>
-            <thead>
+          <table class="table  table-responsive-sm">
+            <thead class="thead-light">
               <tr>
                 <th></th>
                 <th scope="row">${uiLabelMap.OrderProduct}</th>
                 <#if asslGiftWraps?has_content && productStore.showCheckoutGiftOptions! != "N">>
                   <th scope="row">
-                    <select class="selectBox" name="GWALL" onchange="javascript:gwAll(this);">
+                    <select class="form-control" name="GWALL" onchange="javascript:gwAll(this);">
                       <option value="">${uiLabelMap.EcommerceGiftWrapAllItems}</option>
                       <option value="NO^">${uiLabelMap.EcommerceNoGiftWrap}</option>
                       <#list allgiftWraps as option>
@@ -209,10 +219,10 @@ under the License.
                 <#else>
                   <th scope="row">${uiLabelMap.CommonQuantity}</th>
                 </#if>
-                <th scope="row">${uiLabelMap.EcommerceUnitPrice}</th>
-                <th scope="row">${uiLabelMap.EcommerceAdjustments}</th>
-                <th scope="row">${uiLabelMap.EcommerceItemTotal}</th>
-                <th scope="row">
+                <th class="amount">${uiLabelMap.EcommerceUnitPrice}</th>
+                <th class="amount">${uiLabelMap.EcommerceAdjustments}</th>
+                <th class="amount">${uiLabelMap.EcommerceItemTotal}</th>
+                <th>
                   <input type="checkbox" name="selectAll" value="0" class="selectAll"/>
                 </th>
               </tr>
@@ -232,15 +242,16 @@ under the License.
                     <#if cartLine.getShoppingListId()??>
                       <#assign itemsFromList = true />
                       <a href="<@ofbizUrl>editShoppingList?shoppingListId=${cartLine.getShoppingListId()}</@ofbizUrl>"
-                          class="linktext">L</a>&nbsp;&nbsp;
+                          >L</a>&nbsp;&nbsp;
                     <#elseif cartLine.getIsPromo()>
                       <#assign promoItems = true />
-                      <a href="<@ofbizUrl>view/showcart</@ofbizUrl>" class="button">P</a>&nbsp;&nbsp;
+                      <span class="badge badge-success">P</span>
                     <#else>
                       &nbsp;
                     </#if>
                   </td>
                   <td>
+                  <div class="media">
                     <#if cartLine.getProductId()??>
                       <#-- product item -->
                       <#-- start code to display a small image of the product -->
@@ -258,15 +269,20 @@ under the License.
                       <#if smallImageUrl?string?has_content>
                         <a href="<@ofbizCatalogAltUrl productId=parentProductId/>">
                           <img src="<@ofbizContentUrl>${requestAttributes.contentPathPrefix!}${smallImageUrl}</@ofbizContentUrl>"
-                              alt="Product Image" class="imageborder" />
+                              alt="Product Image" class="cart-image mr-3" />
                         </a>
                       </#if>
                       <#-- end code to display a small image of the product -->
                       <#-- ${cartLineIndex} - -->
+
+                    <div class="media-body">
+                      <h4 class="mt-0">
                       <a href="<@ofbizCatalogAltUrl productId=parentProductId/>"
-                          class="linktext">${cartLine.getProductId()} -
+                          >${cartLine.getProductId()} -
                         ${cartLine.getName(dispatcher)!}
-                      </a> : ${cartLine.getDescription(dispatcher)!}
+                      </a>
+                      </h4>
+                        ${cartLine.getDescription(dispatcher)!}
                       <#-- For configurable products, the selected options are shown -->
                       <#if cartLine.getConfigWrapper()??>
                         <#assign selectedOptions = cartLine.getConfigWrapper().getSelectedOptions()! />
@@ -318,7 +334,7 @@ under the License.
                             Static["org.apache.ofbiz.product.product.ProductWorker"].getGwpAlternativeOptionName(
                             dispatcher, delegator, alternativeOptionProductId, requestAttributes.locale) />
                           <option
-                              value="<@ofbizUrl>setDesiredAlternateGwpProductId?alternateGwpProductId=${alternativeOptionProductId}&alternateGwpLine=${cartLineIndex}</@ofbizUrl>">
+                              value="<@ofbizUrl>setDesiredAlternateGwpProductId?alternateGwpProductId=${alternativeOptionProductId}&amp;alternateGwpLine=${cartLineIndex}</@ofbizUrl>">
                             ${alternativeOptionName?default(alternativeOptionProductId)}
                           </option>
                         </#list>
@@ -331,12 +347,14 @@ under the License.
                             requestAttributes.locale) />
                         <li>
                           <a href="<@ofbizUrl>setDesiredAlternateGwpProductId?alternateGwpProductId=${alternativeOptionProductId}&alternateGwpLine=${cartLineIndex}</@ofbizUrl>"
-                              class="button">Select: ${alternativeOptionName?default(alternativeOptionProductId)}</a>
+                              class="btn btn-outline-secondary btn-sm">Select: ${alternativeOptionName?default(alternativeOptionProductId)}</a>
                         </li>
                       </#list>
                       </ul>
                       -->
                     </#if>
+                    </div>
+                    </div>
                   </td>
 
                   <#-- gift wrap option -->
@@ -346,7 +364,7 @@ under the License.
                     <#assign selectedOption = cartLine.getAdditionalProductFeatureAndAppl("GIFT_WRAP")! />
                     <#if giftWrapOption?has_content>
                       <select class="selectBox" name="option^GIFT_WRAP_${cartLineIndex}"
-                          onchange="javascript:document.cartform.submit()">
+                          onchange="">
                         <option value="NO^">${uiLabelMap.EcommerceNoGiftWrap}</option>
                         <#list giftWrapOption as option>
                           <option value="${option.productFeatureId}"
@@ -358,7 +376,7 @@ under the License.
                       </select>
                     <#elseif showNoGiftWrapOptions>
                       <select class="selectBox" name="option^GIFT_WRAP_${cartLineIndex}"
-                          onchange="javascript:document.cartform.submit()">
+                          onchange="">
                         <option value="">${uiLabelMap.EcommerceNoGiftWrap}</option>
                       </select>
                     <#else>
@@ -426,20 +444,20 @@ under the License.
                               <td>--</td>
                               <td>
                         </#if>
-                              <input size="6" class="inputBox" type="text" name="update_${cartLineIndex}"
+                              <input class="inputBox form-control" type="number" name="update_${cartLineIndex}"
                                   value="${cartLine.getQuantity()?string.number}" />
                               </td>
                             </tr>
                           </table>
                         <#else><#-- fixedAssetExist -->
-                          <input size="6" class="inputBox" type="text" name="update_${cartLineIndex}"
+                          <input class="inputBox form-control" type="number" name="update_${cartLineIndex}"
                               value="${cartLine.getQuantity()?string.number}" />
                         </#if>
                     </#if>
                   </td>
-                  <td><@ofbizCurrency amount=cartLine.getDisplayPrice() isoCode=shoppingCart.getCurrency()/></td>
-                  <td><@ofbizCurrency amount=cartLine.getOtherAdjustments() isoCode=shoppingCart.getCurrency()/></td>
-                  <td><@ofbizCurrency amount=cartLine.getDisplayItemSubTotal() isoCode=shoppingCart.getCurrency()/></td>
+                  <td class="amount"><@ofbizCurrency amount=cartLine.getDisplayPrice() isoCode=shoppingCart.getCurrency()/></td>
+                  <td class="amount"><@ofbizCurrency amount=cartLine.getOtherAdjustments() isoCode=shoppingCart.getCurrency()/></td>
+                  <td class="amount"><@ofbizCurrency amount=cartLine.getDisplayItemSubTotal() isoCode=shoppingCart.getCurrency()/></td>
                   <td>
                     <#if !cartLine.getIsPromo()>
                       <input type="checkbox" name="selectedItem" value="${cartLineIndex}" class="selectAllChild"/>
@@ -450,71 +468,72 @@ under the License.
                 </tr>
               </#list>
             </tbody>
-          </table>
-          <table>
+          <tfoot>
+            <tr class="thead-light">
+              <th colspan="8">
+                Summary:
+              </th>
+            </tr>
             <#if shoppingCart.getAdjustments()?has_content>
               <tr>
-                <th>${uiLabelMap.CommonSubTotal}:</th>
-                <td>
+                <th colspan="6">${uiLabelMap.CommonSubTotal}:</th>
+                <td class="amount" colspan="1">
                   <@ofbizCurrency amount=shoppingCart.getDisplaySubTotal() isoCode=shoppingCart.getCurrency()/>
                 </td>
-                <td>&nbsp;</td>
               </tr>
               <#if (shoppingCart.getDisplayTaxIncluded() > 0.0)>
                 <tr>
-                  <th>${uiLabelMap.OrderSalesTaxIncluded}:</th>
-                  <td>
+                  <th colspan="6">${uiLabelMap.OrderSalesTaxIncluded}:</th>
+                  <td class="amount" colspan="1">
                     <@ofbizCurrency amount=shoppingCart.getDisplayTaxIncluded() isoCode=shoppingCart.getCurrency()/>
                   </td>
-                  <td>&nbsp;</td>
                 </tr>
               </#if>
               <#list shoppingCart.getAdjustments() as cartAdjustment>
                 <#assign adjustmentType = cartAdjustment.getRelatedOne("OrderAdjustmentType", true) />
                 <tr>
-                  <th>
+                  <th colspan="6">
                     ${uiLabelMap.EcommerceAdjustment} - ${adjustmentType.get("description",locale)!}
                     <#if cartAdjustment.productPromoId?has_content>
-                      <a href="<@ofbizUrl>showPromotionDetails?productPromoId=${cartAdjustment.productPromoId}</@ofbizUrl>"
-                          class="button">
+                      <a href="<@ofbizUrl>showPromotionDetails?productPromoId=${cartAdjustment.productPromoId}</@ofbizUrl>">
                         ${uiLabelMap.CommonDetails}
                       </a>
                     </#if>:
                   </th>
-                  <td>
+                  <td class="amount" colspan="1">
                     <@ofbizCurrency amount=Static["org.apache.ofbiz.order.order.OrderReadHelper"]
                         .calcOrderAdjustment(cartAdjustment,
                         shoppingCart.getSubTotal()) isoCode=shoppingCart.getCurrency()/>
                   </td>
-                  <td>&nbsp;</td>
                 </tr>
               </#list>
             </#if>
             <tr>
-              <th>${uiLabelMap.EcommerceCartTotal}:</th>
-              <td>
+              <th colspan="6">${uiLabelMap.EcommerceCartTotal}:</th>
+              <td class="amount" colspan="1">
                 <@ofbizCurrency amount=shoppingCart.getDisplayGrandTotal() isoCode=shoppingCart.getCurrency()/>
               </td>
             </tr>
             <#if itemsFromList>
               <tr>
-                <td>L - ${uiLabelMap.EcommerceItemsfromShopingList}.</td>
+                <td colspan="8">L - ${uiLabelMap.EcommerceItemsfromShopingList}.</td>
               </tr>
             </#if>
             <#if promoItems>
               <tr>
-                <td>P - ${uiLabelMap.EcommercePromotionalItems}.</td>
+                <td colspan="8"><span class="badge badge-success">P</span> - ${uiLabelMap.EcommercePromotionalItems}.</td>
               </tr>
             </#if>
             <#if !itemsFromList && !promoItems>
               <tr>
-                <td>&nbsp;</td>
+                <td colspan="8">&nbsp;</td>
               </tr>
             </#if>
             <tr>
-              <td>
+              <td colspan="8">
                 <#if sessionAttributes.userLogin?has_content && sessionAttributes.userLogin.userLoginId != "anonymous">
-                  <select name="shoppingListId" class="selectBox">
+                  <div class="input-group">
+                  <select class="form-control selectBox" name="shoppingListId">
                     <#if shoppingLists?has_content>
                       <#list shoppingLists as shoppingList>
                         <option value="${shoppingList.shoppingListId}">${shoppingList.listName}</option>
@@ -523,13 +542,15 @@ under the License.
                     <option value="">---</option>
                     <option value="">${uiLabelMap.OrderNewShoppingList}</option>
                   </select>
-                  &nbsp;&nbsp;
-                  <a href="javascript:addToList();" class="button">
+                  <span class="input-group-btn">
+                  <a href="javascript:addToList();" class="btn btn-outline-secondary">
                     ${uiLabelMap.EcommerceAddSelectedtoList}
-                  </a>&nbsp;&nbsp;
+                  </a>
+                  </span>
+                  </div>
                 <#else>
                   ${uiLabelMap.OrderYouMust}
-                  <a href="<@ofbizUrl>checkLogin/showcart</@ofbizUrl>" class="button">
+                  <a href="<@ofbizUrl>checkLogin/showcart</@ofbizUrl>" class="btn btn-outline-secondary btn-sm">
                     ${uiLabelMap.CommonBeLogged}
                   </a>
                   ${uiLabelMap.OrderToAddSelectedItemsToShoppingList}.&nbsp;
@@ -537,17 +558,16 @@ under the License.
               </td>
             </tr>
             <tr>
-              <td>
+              <td colspan="8">
                 <#if sessionAttributes.userLogin?has_content && sessionAttributes.userLogin.userLoginId != "anonymous">
-                  &nbsp;&nbsp;
-                  <a href="<@ofbizUrl>createCustRequestFromCart</@ofbizUrl>" class="button">
+                  <a href="<@ofbizUrl>createCustRequestFromCart</@ofbizUrl>" class="btn btn-outline-secondary btn-sm">
                     ${uiLabelMap.OrderCreateCustRequestFromCart}
                   </a>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <a href="<@ofbizUrl>createQuoteFromCart</@ofbizUrl>" class="button">
+                  <a href="<@ofbizUrl>createQuoteFromCart</@ofbizUrl>" class="btn btn-outline-secondary btn-sm">
                     ${uiLabelMap.OrderCreateQuoteFromCart}</a>&nbsp;&nbsp;
                 <#else>
                   ${uiLabelMap.OrderYouMust}
-                  <a href="<@ofbizUrl>checkLogin/showcart</@ofbizUrl>" class="button">
+                  <a href="<@ofbizUrl>checkLogin/showcart</@ofbizUrl>" class="btn btn-outline-secondary btn-sm">
                     ${uiLabelMap.CommonBeLogged}
                   </a>
                   ${uiLabelMap.EcommerceToOrderCreateCustRequestFromCart}.&nbsp;
@@ -555,33 +575,39 @@ under the License.
               </td>
             </tr>
             <tr>
-              <td>
+              <td colspan="8">
+              <label class="form-check-label">
                 <input type="checkbox" onclick="javascript:document.cartform.submit()"
                     name="alwaysShowcart" <#if shoppingCart.viewCartOnAdd()>checked="checked"</#if>/>
                 ${uiLabelMap.EcommerceAlwaysViewCartAfterAddingAnItem}.
+              </label>
               </td>
             </tr>
-          </table>
-        </fieldset>
+          </tfoot>
+        </table>
       </form>
     <#else>
-      <h2>${uiLabelMap.EcommerceYourShoppingCartEmpty}.</h2>
+      <h3>${uiLabelMap.EcommerceYourShoppingCartEmpty}.</h3>
     </#if>
 <#-- Copy link bar to bottom to include a link bar at the bottom too -->
     </div>
 </div>
 
-<div>
+<div class="row">
+  <div class="col-xl-6">
   <div>
-    <h2>${uiLabelMap.ProductPromoCodes}</h2>
+    <h3>${uiLabelMap.ProductPromoCodes}</h3>
   </div>
   <div>
     <div>
       <form method="post"
           action="<@ofbizUrl>addpromocode<#if requestAttributes._CURRENT_VIEW_?has_content>/${requestAttributes._CURRENT_VIEW_}</#if></@ofbizUrl>" name="addpromocodeform">
-        <fieldset>
-          <input type="text" class="inputBox" size="15" name="productPromoCodeId" value="" />
-          <input type="submit" class="smallSubmit" value="${uiLabelMap.OrderAddCode}" />
+        <div class="input-group">
+          <input type="text" class="form-control form-control-sm" size="15" name="productPromoCodeId" value="" />
+           <span class="input-group-btn">
+             <input type="submit" class="btn btn-outline-secondary btn-sm" value="${uiLabelMap.OrderAddCode}" />
+           </span>
+        </div>
           <#assign productPromoCodeIds = (shoppingCart.getProductPromoCodesEntered())! />
           <#if productPromoCodeIds?has_content>
             ${uiLabelMap.ProductPromoCodesEntered}
@@ -591,16 +617,16 @@ under the License.
               </#list>
             </ul>
           </#if>
-        </fieldset>
+
       </form>
     </div>
   </div>
-</div>
+  </div>
 
 <#if showPromoText?? && showPromoText>
-  <div>
+   <div class="col-xl-6">
     <div>
-      <h2>${uiLabelMap.OrderSpecialOffers}</h2>
+      <h3>${uiLabelMap.OrderSpecialOffers}</h3>
     </div>
     <div>
       <#-- show promotions text -->
@@ -608,32 +634,35 @@ under the License.
         <#list productPromos as productPromo>
           <li>
             <a href="<@ofbizUrl>showPromotionDetails?productPromoId=${productPromo.productPromoId}</@ofbizUrl>"
-                class="linktext">[${uiLabelMap.CommonDetails}]</a>
+                >[${uiLabelMap.CommonDetails}]</a>
               ${StringUtil.wrapString(productPromo.promoText!)}
           </li>
         </#list>
       </ul>
       <div>
-        <a href="<@ofbizUrl>showAllPromotions</@ofbizUrl>" class="button">${uiLabelMap.OrderViewAllPromotions}</a>
+        <a href="<@ofbizUrl>showAllPromotions</@ofbizUrl>" class="btn btn-outline-secondary btn-sm">${uiLabelMap.OrderViewAllPromotions}</a>
       </div>
     </div>
   </div>
 </#if>
+</div>
 
 <#if associatedProducts?has_content>
-  <div>
-    <div>
-      <h2>${uiLabelMap.EcommerceYouMightAlsoIntrested}:</h2>
+  <div class="card">
+    <div class="card-header">
+      <h3>${uiLabelMap.EcommerceYouMightAlsoIntrested}:</h3>
     </div>
-    <div>
+    <div class="card-body">
       <#-- random complementary products -->
+      <div class="row row-eq-height">
       <#list associatedProducts as assocProduct>
-        <div>
+
           ${setRequestAttribute("optProduct", assocProduct)}
           ${setRequestAttribute("listIndex", assocProduct_index)}
           ${screens.render("component://ecommerce/widget/CatalogScreens.xml#productsummary")}
-        </div>
+
       </#list>
+        </div>
     </div>
   </div>
 </#if>

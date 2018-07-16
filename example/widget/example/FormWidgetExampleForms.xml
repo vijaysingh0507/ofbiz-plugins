@@ -287,7 +287,7 @@ under the License.
             <display description="${uiLabelMap.ExampleMultipleDropDownTooltip}"/>
         </field>
         <field name="countryGeoIdMultiple" title="${uiLabelMap.CommonCountry}">
-            <drop-down no-current-selected-key="USA">
+            <drop-down no-current-selected-key="USA" allow-multiple="true">
                 <entity-options entity-name="Geo" key-field-name="geoId" description="${geoName}">
                     <entity-constraint name="geoTypeId" value="COUNTRY"/>
                     <entity-order-by field-name="geoName"/>
@@ -352,10 +352,22 @@ under the License.
         <field name="geoIdAlone" title="${uiLabelMap.CommonGeoId}"  tooltip="${uiLabelMap.ExampleLookupFields1}" tooltip-style="button-text">
             <lookup target-form-name="LookupGeo" presentation="window"/>
         </field>
+        <!-- Old style lookup with description field (in a popup window without autocompletion)-->
+        <field name="geoIdAloneDesc" title="${uiLabelMap.CommonGeoId}">
+            <text/>
+        </field>
+        <field name="geoNameAloneDesc" title="${uiLabelMap.CommonGeoName}"  tooltip="${uiLabelMap.ExampleLookupFields6}" tooltip-style="button-text">
+            <lookup target-form-name="LookupGeo" presentation="window" description-field-name="geoIdAloneDesc"/>
+        </field>
         <!-- Standard lookup (in a layer with autocompletion) -->
         <field name="geoIdStd" title="${uiLabelMap.CommonGeoId}" tooltip="${uiLabelMap.ExampleLookupFields2}" tooltip-style="button-text">
             <lookup target-form-name="LookupGeo"/>
         </field>
+        <!-- Standard lookup with description field  (in a layer with autocompletion) -->
+        <field name="geoNameStdDesc" title="${uiLabelMap.CommonGeoName}" tooltip="${uiLabelMap.ExampleLookupFields7}" tooltip-style="button-text">
+            <lookup target-form-name="LookupGeoName" description-field-name="geoIdStdDesc"/>
+        </field>
+        <field name="geoIdStdDesc" title="${uiLabelMap.CommonGeoId}"><text/></field>
         <!-- Standard read only lookup (in a layer with autocompletion) -->
         <field name="geoIdReadOnly" title="${uiLabelMap.CommonGeoId}"  tooltip="${uiLabelMap.ExampleLookupFields3}" tooltip-style="button-text">
             <lookup target-form-name="LookupGeo" read-only="true"/>
@@ -379,7 +391,15 @@ under the License.
                 <sort-field name="geoIdAlone"/>
             </field-group>
             <field-group>
+                <sort-field name="geoNameAloneDesc"/>
+                <sort-field name="geoIdAloneDesc"/>
+            </field-group>
+            <field-group>
                 <sort-field name="geoIdStd"/>
+            </field-group>
+            <field-group>
+                <sort-field name="geoNameStdDesc"/>
+                <sort-field name="geoIdStdDesc"/>
             </field-group>
             <field-group>
                 <sort-field name="geoIdReadOnly"/>
@@ -408,9 +428,12 @@ under the License.
         <field name="newExample" title=" " widget-area-style="smallSubmit" position="1">
             <hyperlink description="${uiLabelMap.ExampleNewExample} (Layered-modal)" target="EditExampleLayer" also-hidden="false" link-type="layered-modal"/>
         </field>
+        <field name="deleteLink" title="${uiLabelMap.FormFieldTitle_confirmButton} ${uiLabelMap.ExampleExample}" widget-style="buttontext">
+            <hyperlink description="${uiLabelMap.CommonDelete}" target="FormWidgetExamples" also-hidden="false" confirmation-message="Are you sure you want to perform this action?"/>
+        </field>
     </form>
 
     <form name="MaskFieldExampleForm" type="single">
-        <field name="maskField" className="test" title="${uiLabelMap.ExampleField}"><text mask='a*-999-a999'/></field>
+        <field name="maskField" title="${uiLabelMap.ExampleField}"><text mask='a*-999-a999'/></field>
     </form>
 </forms>

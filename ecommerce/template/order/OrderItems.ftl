@@ -20,27 +20,30 @@ under the License.
 <#-- NOTE: this template is used for the orderstatus screen in ecommerce AND for order notification emails through the OrderNoticeEmail.ftl file -->
 <#-- the "urlPrefix" value will be prepended to URLs by the ofbizUrl transform if/when there is no "request" object in the context -->
 <#if baseEcommerceSecureUrl??><#assign urlPrefix = baseEcommerceSecureUrl/></#if>
-<div class="screenlet">
+<div class="card">
     <#if "Y" == maySelectItems?default("N")>
-      <form name="addCommonToCartForm" action="<@ofbizUrl>addordertocart/orderstatus</@ofbizUrl>" method="post">
+          <form name="addCommonToCartForm" action="<@ofbizUrl>addordertocart/orderstatus</@ofbizUrl>" method="post">
         <input type="hidden" name="add_all" value="false" />    
             <input type="hidden" name="orderId" value="${orderHeader.orderId}" />
     </#if>
-  <h3>
+  <div class="card-header">
+    <strong>
     <#assign numColumns = 8>
     ${uiLabelMap.OrderOrderItems}
     <#if "Y" == maySelectItems?default("N") && "PLACING_CUSTOMER" == roleTypeId!>
       <#assign numColumns = 11>
       <a href="javascript:document.addCommonToCartForm.add_all.value='true';document.addCommonToCartForm.submit()"
-          class="submenutext">${uiLabelMap.OrderAddAllToCart}</a>
+          class="btn btn-sm float-right">${uiLabelMap.OrderAddAllToCart}</a>
       <a href="javascript:document.addCommonToCartForm.add_all.value='false';document.addCommonToCartForm.submit()"
-          class="submenutext">${uiLabelMap.OrderAddCheckedToCart}</a>
+          class="btn btn-sm float-right">${uiLabelMap.OrderAddCheckedToCart}</a>
       <a href="<@ofbizUrl fullPath="true">createShoppingListFromOrder?orderId=${orderHeader.orderId}&amp;frequency=6&amp;intervalNumber=1&amp;shoppingListTypeId=SLT_AUTO_REODR</@ofbizUrl>"
-          class="submenutextright">${uiLabelMap.OrderSendMeThisEveryMonth}</a>
+          class="btn btn-sm float-right">${uiLabelMap.OrderSendMeThisEveryMonth}</a>
     </#if>
-  </h3>
-  <table>
-    <thead>
+    </strong>
+  </div>
+  <div class="card-body">
+  <table class="table table-responsive-sm">
+    <thead class="thead-light">
       <tr>
         <th>${uiLabelMap.OrderProduct}</th>
         <#if "Y" == maySelectItems?default("N")>
@@ -54,9 +57,9 @@ under the License.
           <th></th>
           <th>${uiLabelMap.OrderQtyOrdered}</th>
         </#if>
-          <th>${uiLabelMap.EcommerceUnitPrice}</th>
-          <th>${uiLabelMap.OrderAdjustments}</th>
-          <th>${uiLabelMap.CommonSubtotal}</th>
+          <th class="amount">${uiLabelMap.EcommerceUnitPrice}</th>
+          <th class="amount">${uiLabelMap.OrderAdjustments}</th>
+          <th class="amount">${uiLabelMap.CommonSubtotal}</th>
         <#if "Y" == maySelectItems?default("N") && "PLACING_CUSTOMER" == roleTypeId!>
           <th colspan="3"></th>
         </#if>
@@ -65,7 +68,7 @@ under the License.
     <tfoot>
       <tr>
         <th colspan="7">${uiLabelMap.CommonSubtotal}</th>
-        <td><@ofbizCurrency amount=orderSubTotal isoCode=currencyUomId/></td>
+        <td class="amount"><@ofbizCurrency amount=orderSubTotal isoCode=currencyUomId/></td>
         <#if "Y" == maySelectItems?default("N")>
           <td colspan="3"></td>
         </#if>
@@ -73,7 +76,7 @@ under the License.
       <#list headerAdjustmentsToShow as orderHeaderAdjustment>
         <tr>
           <th colspan="7">${localOrderReadHelper.getAdjustmentType(orderHeaderAdjustment)}</th>
-          <td><@ofbizCurrency amount=localOrderReadHelper.getOrderAdjustmentTotal(orderHeaderAdjustment) isoCode=currencyUomId/></td>
+          <td class="amount"><@ofbizCurrency amount=localOrderReadHelper.getOrderAdjustmentTotal(orderHeaderAdjustment) isoCode=currencyUomId/></td>
           <#if "Y" == maySelectItems?default("N")>
             <td colspan="3"></td>
           </#if>
@@ -81,14 +84,14 @@ under the License.
       </#list>
       <tr>
         <th colspan="7">${uiLabelMap.OrderShippingAndHandling}</th>
-        <td><@ofbizCurrency amount=orderShippingTotal isoCode=currencyUomId/></td>
+        <td class="amount"><@ofbizCurrency amount=orderShippingTotal isoCode=currencyUomId/></td>
         <#if "Y" == maySelectItems?default("N")>
           <td colspan="3"></td>
         </#if>
       </tr>
       <tr>
         <th colspan="7">${uiLabelMap.OrderSalesTax}</th>
-        <td><@ofbizCurrency amount=orderTaxTotal isoCode=currencyUomId/></td>
+        <td class="amount"><@ofbizCurrency amount=orderTaxTotal isoCode=currencyUomId/></td>
         <#if "Y" == maySelectItems?default("N")>
           <td colspan="3"></td>
         </#if>
@@ -104,7 +107,7 @@ under the License.
       </tr>
       <tr>
         <th colspan="7">${uiLabelMap.OrderGrandTotal}</th>
-        <td>
+        <td class="amount">
           <@ofbizCurrency amount=orderGrandTotal isoCode=currencyUomId/>
         </td>
         <#if "Y" == maySelectItems?default("N")>
@@ -146,7 +149,7 @@ under the License.
                   class="linktext">${orderItem.productId} - ${orderItem.itemDescription?default("")}</a>
               <#assign orderItemAttributes = orderItem.getRelated("OrderItemAttribute", null, null, false)/>
               <#if orderItemAttributes?has_content>
-                <ul>
+                <ul class="list-unstyled">
                   <#list orderItemAttributes as orderItemAttribute>
                     <li>${orderItemAttribute.attrName} : ${orderItemAttribute.attrValue}</li>
                   </#list>
@@ -221,13 +224,13 @@ under the License.
                 ${canceledQty?default(0)?string.number}
               </td>
             </#if>
-            <td>
+            <td class="amount">
               <@ofbizCurrency amount=orderItem.unitPrice isoCode=currencyUomId/>
             </td>
-            <td>
+            <td class="amount">
               <@ofbizCurrency amount=localOrderReadHelper.getOrderItemAdjustmentsTotal(orderItem) isoCode=currencyUomId/>
             </td>
-            <td>
+            <td class="amount">
               <#if workEfforts??>
                   <@ofbizCurrency amount=localOrderReadHelper.getOrderItemTotal(orderItem)*rentalQuantity isoCode=currencyUomId/>
                 <#else>
@@ -305,7 +308,7 @@ under the License.
               </#if>
             </td>
             <td colspan="5"></td>
-            <td>
+            <td class="amount">
               <@ofbizCurrency amount=localOrderReadHelper.getOrderItemAdjustmentTotal(orderItem, orderItemAdjustment) isoCode=currencyUomId/>
             </td>
             <td></td>
@@ -345,4 +348,5 @@ under the License.
     <#if "Y" == maySelectItems?default("N") >
         </form>
      </#if>
+     </div>
 </div>

@@ -35,7 +35,7 @@ import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.util.EntityUtil;
+import org.apache.ofbiz.entity.util.EntityQuery;
 import org.apache.ofbiz.service.DispatchContext;
 import org.apache.ofbiz.service.ServiceUtil;
 
@@ -52,7 +52,7 @@ public class DimensionServices {
         GenericValue lastDimensionValue = null;
         try {
             // TODO: improve performance
-            lastDimensionValue = EntityUtil.getFirst(delegator.findByAnd(dimensionEntityName, UtilMisc.toMap(naturalKeyFields), UtilMisc.toList("-createdTxStamp"), false));
+            lastDimensionValue = EntityQuery.use(delegator).from(dimensionEntityName).where(naturalKeyFields).orderBy("-createdTxStamp").queryFirst();
         } catch (GenericEntityException gee) {
             return ServiceUtil.returnError(gee.getMessage());
         }
@@ -70,7 +70,7 @@ public class DimensionServices {
         Locale locale = (Locale) context.get("locale");
 
         try {
-            Map<String, Object> andCondition = new HashMap<String, Object>();
+            Map<String, Object> andCondition = new HashMap<>();
             for (String naturalKeyField: naturalKeyFields) {
                 andCondition.put(naturalKeyField, dimensionValue.get(naturalKeyField));
             }
@@ -79,7 +79,7 @@ public class DimensionServices {
             }
             List<GenericValue> existingDimensionValues = null;
             try {
-                existingDimensionValues = delegator.findByAnd(dimensionValue.getEntityName(), UtilMisc.toMap(andCondition), null, false);
+                existingDimensionValues = EntityQuery.use(delegator).from(dimensionValue.getEntityName()).where(andCondition).queryList();
             } catch (GenericEntityException gee) {
                 return ServiceUtil.returnError(gee.getMessage());
             }
@@ -136,7 +136,7 @@ public class DimensionServices {
         while (currentDate.compareTo(thruDate) <= 0) {
             GenericValue dateValue = null;
             try {
-                dateValue = EntityUtil.getFirst(delegator.findByAnd("DateDimension", UtilMisc.toMap("dateValue", currentDate), null, false));
+                dateValue = EntityQuery.use(delegator).from("DateDimension").where("dateValue", currentDate).queryFirst();
             } catch (GenericEntityException gee) {
                 return ServiceUtil.returnError(gee.getMessage());
             }
@@ -149,14 +149,14 @@ public class DimensionServices {
             dateValue.set("description", dayDescriptionFormat.format(currentDate));
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
             dateValue.set("dayName", dayNameFormat.format(currentDate));
-            dateValue.set("dayOfMonth", new Long(calendar.get(Calendar.DAY_OF_MONTH)));
-            dateValue.set("dayOfYear", new Long(calendar.get(Calendar.DAY_OF_YEAR)));
+            dateValue.set("dayOfMonth", Long.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+            dateValue.set("dayOfYear", Long.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));
             dateValue.set("monthName", monthNameFormat.format(currentDate));
 
-            dateValue.set("monthOfYear", new Long(calendar.get(Calendar.MONTH) + 1));
-            dateValue.set("yearName", new Long(calendar.get(Calendar.YEAR)));
-            dateValue.set("weekOfMonth", new Long(calendar.get(Calendar.WEEK_OF_MONTH)));
-            dateValue.set("weekOfYear", new Long(calendar.get(Calendar.WEEK_OF_YEAR)));
+            dateValue.set("monthOfYear", Long.valueOf(calendar.get(Calendar.MONTH) + 1));
+            dateValue.set("yearName", Long.valueOf(calendar.get(Calendar.YEAR)));
+            dateValue.set("weekOfMonth", Long.valueOf(calendar.get(Calendar.WEEK_OF_MONTH)));
+            dateValue.set("weekOfYear", Long.valueOf(calendar.get(Calendar.WEEK_OF_YEAR)));
             dateValue.set("weekdayType", (dayOfWeek == 1 || dayOfWeek == 7? "Weekend": "Weekday"));
             dateValue.set("yearMonthDay", yearMonthDayFormat.format(currentDate));
             dateValue.set("yearAndMonth", yearMonthFormat.format(currentDate));

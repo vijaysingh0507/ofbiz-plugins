@@ -49,6 +49,7 @@ import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericDelegator;
 import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.entity.GenericValue;
+import org.apache.ofbiz.entity.util.EntityQuery;
 import org.apache.ofbiz.service.DispatchContext;
 import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
@@ -79,7 +80,7 @@ public abstract class SolrProductSearch {
         if (SolrUtil.isSolrEcaEnabled()) {
             // Debug.logVerbose("Solr: addToSolr: Running indexing for productId '" + productId + "'", module);
             try {
-                GenericValue product = delegator.findOne("Product", UtilMisc.toMap("productId", productId), false);
+                GenericValue product = EntityQuery.use(delegator).from("Product").where("productId", productId).queryOne();
                 Map<String, Object> dispatchContext = ProductUtil.getProductContent(product, dctx, context);
                 dispatchContext.put("treatConnectErrorNonFatal", SolrUtil.isEcaTreatConnectErrorNonFatal());
                 dispatchContext.put("indexName", solrIndexName);
@@ -110,7 +111,7 @@ public abstract class SolrProductSearch {
             }
         } else {
             final String statusMsg = "Solr ECA indexing disabled; skipping indexing for productId '" + productId + "'";
-            Debug.logVerbose("Solr: addToSolr: " + statusMsg, module);
+            if (Debug.verboseOn()) Debug.logVerbose("Solr: addToSolr: " + statusMsg, module);
             result = ServiceUtil.returnSuccess();
         }
         return result;
@@ -407,6 +408,9 @@ public abstract class SolrProductSearch {
             dispatchMap.put("indexName", solrIndexName);
 
             Map<String, Object> searchResult = dispatcher.runSync("runSolrQuery", dispatchMap);
+            if (ServiceUtil.isError(searchResult)) {
+                return ServiceUtil.returnError(ServiceUtil.getErrorMessage(searchResult));
+            }
 
             QueryResponse queryResult = (QueryResponse) searchResult.get("queryResult");
 
@@ -454,6 +458,9 @@ public abstract class SolrProductSearch {
             dispatchMap.put("indexName", solrIndexName);
 
             Map<String, Object> searchResult = dispatcher.runSync("runSolrQuery", dispatchMap);
+            if (ServiceUtil.isError(searchResult)) {
+                return ServiceUtil.returnError(ServiceUtil.getErrorMessage(searchResult));
+            }
             QueryResponse queryResult = (QueryResponse) searchResult.get("queryResult");
 
             List<List<String>> suggestions = new ArrayList<List<String>>();
@@ -681,7 +688,9 @@ public abstract class SolrProductSearch {
             // THis adds all products to the Index (instantly)
             Map<String, Object> runResult = dispatcher.runSync("addListToSolrIndex", UtilMisc.toMap("fieldList", solrDocs, "userLogin", userLogin, "locale", locale, "indexName",
                     solrIndexName, "treatConnectErrorNonFatal", treatConnectErrorNonFatal));
-
+            if (ServiceUtil.isError(runResult)) {
+                return ServiceUtil.returnError(ServiceUtil.getErrorMessage(runResult));
+            }
             String runMsg = ServiceUtil.getErrorMessage(runResult);
             if (UtilValidate.isEmpty(runMsg)) {
                 runMsg = null;

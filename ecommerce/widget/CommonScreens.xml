@@ -33,6 +33,9 @@ under the License.
                 <property-map resource="OrderUiLabels" map-name="uiLabelMap" global="true"/>
 
                 <set field="MainColumnStyle" value="nocolumns" global="true"/>
+                <script location="component://ecommerce/groovyScripts/EcommerceSetup.groovy"/>
+                <set field="visualThemeId" from-field="productStore.visualThemeId" default-value="EC_DEFAULT"/>
+                <script location="component://common/groovyScripts/InitTheme.groovy"/>
 
                 <!-- The default (global) shortcut icon -->
                 <set field="layoutSettings.shortcutIcon" value="/images/ofbiz.ico" global="true"/>
@@ -43,20 +46,25 @@ under the License.
                 <set field="initialLocaleComplete" type="String" value="${groovy:parameters?.userLogin?.lastLocale}" default-value="${groovy:locale.toString()}"/>
                 <set field="layoutSettings.javaScripts[+0]" value="${groovy: org.apache.ofbiz.common.JsLanguageFilesMapping.dateTime.getFilePath(initialLocaleComplete)}" global="true"/>
 
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon.min-1.4.3.js" global="true"/>
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/ui/js/jquery-ui-1.10.3.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon-1.6.3.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/ui/jquery-ui-1.12.1.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/validate/additional-methods.min.js" global="true"/>
                 <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/validate/jquery.validate.min.js" global="true"/>
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-migrate-1.2.1.js" global="true"/>
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-1.11.0.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/browser-plugin/jquery.browser-0.1.0.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-migrate-3.0.0.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-3.2.1.min.js" global="true"/>
                 <set field="layoutSettings.javaScripts[]" value="/common/js/jquery/plugins/Readmore.js-master/readmore.js" global="true"/>
-                <set field="layoutSettings.javaScripts[]" value="/common/js/jquery/plugins/jquery-jgrowl/1.4.1/jquery.jgrowl.min.js" global="true"/>
-                <set field="layoutSettings.styleSheets[+0]" value="/common/js/jquery/plugins/jquery-jgrowl/1.4.1/jquery.jgrowl.min.css" global="true" />
+                <set field="layoutSettings.javaScripts[]" value="/common/js/jquery/plugins/jquery-jgrowl/jquery.jgrowl-1.4.6.min.js" global="true"/>
+                
+                <set field="layoutSettings.styleSheets[+0]" value="/common/js/jquery/ui/jquery-ui-1.12.1.min.css" global="true" />
+                <set field="layoutSettings.styleSheets[+0]" value="/common/js/jquery/plugins/jquery-jgrowl/jquery.jgrowl-1.4.6.min.css" global="true" />
+                <set field="layoutSettings.styleSheets[+0]" value="/common/js/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon-1.6.3.min.css" global="true" />
 
-                <script location="component://ecommerce/groovyScripts/EcommerceSetup.groovy"/>
+                <set field="layoutSettings.styleSheets[+0]" value="/ecommerce/css/bootstrap.min.css" global="true" />
+                <set field="layoutSettings.javaScripts[]" value="/ecommerce/js/bootstrap.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[]" value="/ecommerce/js/bootstrap.bundle.min.js" global="true"/>
 
                 <!-- Get the store VisualTheme -->
-                <set field="visualThemeId" from-field="productStore.visualThemeId" default-value="EC_DEFAULT"/>
-                <script location="component://common/groovyScripts/InitTheme.groovy"/>
                 <set field="headerTemplateLocation" from-field="layoutSettings.VT_HDR_TMPLT_LOC" default-value="component://ecommerce/template/includes/Header.ftl"/>
                 <set field="footerTemplateLocation" from-field="layoutSettings.VT_FTR_TMPLT_LOC" default-value="component://ecommerce/template/includes/Footer.ftl"/>
                 <entity-and entity-name="WebAnalyticsConfig" list="webAnalyticsConfigs">
@@ -73,24 +81,24 @@ under the License.
                      <platform-specific><html><html-template location="component://ecommerce/template/includes/HeaderHead.ftl"/></html></platform-specific>
                      <platform-specific><html><html-template location="component://common-theme/template/includes/OpenHtmlBody.ftl"/></html></platform-specific>
                      <!-- render header -->
+                     <container id="parentContainer">
                      <container id="header"><platform-specific><html><html-template location="${headerTemplateLocation}"/></html></platform-specific></container>
 
-                     <container id="ecom-mainarea">
-                        <!-- by default will render left-bar only if left/rightbarScreenName value not empty -->
-                        <container id="div1" style="left"><include-screen name="${leftbarScreenName}" location="${leftbarScreenLocation}"/></container>
-                        <container id="div2" style="right"><include-screen name="${rightbarScreenName}" location="${rightbarScreenLocation}"/></container>
+                     <container id="ecom-mainarea" style="row mx-2">
 
-                        <container id="div3" style="${MainColumnStyle}">
-                           <!-- render messages -->
-                           <platform-specific><html><html-template location="component://common-theme/template/includes/Messages.ftl"/></html></platform-specific>
-                           <decorator-section-include name="body"/>
-                        </container>
-
-                        <container id="div4" style="endcolumns"/>
+                         <container id="div1" style="col-lg-2 order-lg-1 order-2"><include-screen name="${leftbarScreenName}" location="${leftbarScreenLocation}"/></container>
+                         <container id="div3" style="col-lg-8 order-lg-2 order-1">
+                             <!-- render messages -->
+                             <platform-specific><html><html-template location="component://common-theme/template/includes/Messages.ftl"/></html></platform-specific>
+                             <decorator-section-include name="body"/>
+                         </container>
+                             <container id="div2" style="col-lg-2 order-lg-3 order-3"><include-screen name="${rightbarScreenName}" location="${rightbarScreenLocation}"/></container>
+                         <container id="div4" style="endcolumns"/>
                     </container>
 
                     <!-- render footer -->
                     <container id="footer"><platform-specific><html><html-template location="${footerTemplateLocation}"/></html></platform-specific></container>
+                    </container>
                     <platform-specific><html><html-template location="component://common-theme/template/includes/CloseHtmlBody.ftl"/></html></platform-specific>
                   </widgets>
                   <fail-widgets>
@@ -124,7 +132,7 @@ under the License.
             <widgets>
                     <include-screen name="language"/>
                     <include-screen name="minicart" location="component://ecommerce/widget/CartScreens.xml"/>
-                    <include-screen name="compareproductslist" location="component://order/widget/ordermgr/OrderEntryCatalogScreens.xml"/>
+                    <include-screen name="compareproductslist" location="component://ecommerce/widget/CatalogScreens.xml"/>
                     <include-screen name="minipromotext" location="component://ecommerce/widget/CartScreens.xml"/>
                     <include-screen name="miniassocprods" location="component://ecommerce/widget/CatalogScreens.xml"/>
                     <include-screen name="factoids" location="component://ecommerce/widget/ContentScreens.xml"/>
@@ -261,9 +269,9 @@ under the License.
                 <set field="layoutSettings.javaScripts[]" value="/common/js/util/OfbizUtil.js" global="true"/>
 
                 <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/validate/jquery.validate.min.js" global="true"/>
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-1.11.0.min.js" global="true"/>
-                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-migrate-1.2.1.js" global="true" />
-                
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-3.2.1.min.js" global="true"/>
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/jquery-migrate-3.0.0.min.js" global="true" />
+                <set field="layoutSettings.javaScripts[+0]" value="/common/js/jquery/plugins/browser-plugin/jquery.browser-0.1.0.min.js" global="true"/>
 
                 <script location="component://ecommerce/groovyScripts/EcommerceSetup.groovy"/>
 

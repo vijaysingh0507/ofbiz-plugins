@@ -16,22 +16,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<div class="screenlet">
-    <div class="screenlet-title-bar">
-        <div class="h3">${uiLabelMap.OrderRequestRoles}</div>
+<#if requestParties?has_content>
+
+<div class="card">
+    <div class="card-header">
+        <strong>${uiLabelMap.OrderRequestRoles}</strong>
     </div>
-    <div class="screenlet-body">
+    <div class="card-body">
         <table cellspacing="0" class="basic-table">
          <#assign row = 1>
          <#list requestParties as requestParty>
             <#assign roleType = requestParty.getRelatedOne("RoleType", false)>
             <#assign party = requestParty.getRelatedOne("Party", false)>
               <tr>
-                  <td align="right" valign="top" width="15%" class="label">
-                      &nbsp;${roleType.get("description", locale)!}
+                  <td>
+                      ${roleType.get("description", locale)!}
                   </td>
-                  <td width="5%">&nbsp;</td>
-                  <td valign="top" width="80%">
+                  <td>
                       ${Static["org.apache.ofbiz.party.party.PartyHelper"].getPartyName(party)}
                   </td>
               </tr>
@@ -43,3 +44,4 @@ under the License.
         </table>
     </div>
 </div>
+</#if>
